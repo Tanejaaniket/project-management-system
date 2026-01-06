@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config({
   path: "./.env",
@@ -20,9 +21,17 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use(
+  cookieParser("", {
+    httpOnly: true,
+    secure: true,
+  })
+);
 
 import healthcheckRoutes from "./routes/healtcheck.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 app.use("/api/v1/healthcheck", healthcheckRoutes);
+app.use("/api/v1/auth", authRoutes);
 
 export default app;
