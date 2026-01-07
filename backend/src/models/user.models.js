@@ -74,17 +74,18 @@ const userSchema = new Schema(
   }
 );
 
-//* Dont user arrow function as we need this context and it only work with normal func
-userSchema.pre("save", async function () {
-  if (!this.isModified(this.password)) return ;
+//* Dont user arrow function as we need this context and it only work with normal func and next works only in non async functions
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return 
   this.password = await bcrypt.hash(this.password, 10);
+
 });
 
 userSchema.methods.isPasswordCorrect = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.generateAccessToken = async function (password) {
+userSchema.methods.generateAccessToken = async function () {
   return jwt.sign(
     {
       _id: this._id,
@@ -98,7 +99,7 @@ userSchema.methods.generateAccessToken = async function (password) {
   );
 };
 
-userSchema.methods.generateRefreshToken = async function (password) {
+userSchema.methods.generateRefreshToken = async function () {
   return jwt.sign(
     {
       _id: this._id,
